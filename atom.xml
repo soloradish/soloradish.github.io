@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.lowid.me/"/>
-  <updated>2016-06-16T14:20:21.000Z</updated>
+  <updated>2016-06-18T11:42:23.000Z</updated>
   <id>http://blog.lowid.me/</id>
   
   <author>
@@ -14,6 +14,53 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一道关于 sorted 函数的 Python 面试题</title>
+    <link href="http://blog.lowid.me/2016/06/18/A-Python-interview-question-about-sorted-function/"/>
+    <id>http://blog.lowid.me/2016/06/18/A-Python-interview-question-about-sorted-function/</id>
+    <published>2016-06-18T11:38:14.000Z</published>
+    <updated>2016-06-18T11:42:23.000Z</updated>
+    
+    <content type="html">&lt;p&gt;问题来自 &lt;a href=&quot;http://www.v2ex.com/t/286691&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;v2ex&lt;/a&gt; &lt;/p&gt;
+&lt;p&gt;列表排序：&lt;/p&gt;
+&lt;p&gt;1.正数在前负数在后 2.整数从小到大 3.负数从大到小&lt;/p&gt;
+&lt;p&gt;例： 排序前[7, -8, 5, 4, 0, -2, -5], 排序后[0, 4, 5, 7, -2, -5, -8]&lt;/p&gt;
+&lt;p&gt;sorted(lst, key=lambda x:&lt;strong&gt;___&lt;/strong&gt;)&lt;/p&gt;
+&lt;p&gt;很快就有人给出了答案&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; x: (x&amp;lt;&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, abs(x))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;思路是多级排序, 先按照正负然后再按绝对值排序, 这个答案里面有两个比较有趣的地方&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;多级排序&lt;/li&gt;
+&lt;li&gt;如何让正数在前负数在后&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;先解决多级排序, 在 sorted 函数 的 HowTo 里面有一段这样的描述:&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# The operator module functions allow multiple levels of sorting. For example, to sort by grade then by age:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;&amp;gt;&amp;gt;&amp;gt; &lt;/span&gt;sorted(student_tuples, key=itemgetter(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;[(&lt;span class=&quot;string&quot;&gt;&#39;john&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;A&#39;&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;15&lt;/span&gt;), (&lt;span class=&quot;string&quot;&gt;&#39;dave&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;B&#39;&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;), (&lt;span class=&quot;string&quot;&gt;&#39;jane&#39;&lt;/span&gt;, &lt;span class=&quot;string&quot;&gt;&#39;B&#39;&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt;)]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;上面使用了 operator.itemgetter 这个函数, 那这个函数到底是如何工作的呢, 文档是这么描述的:&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;After f = itemgetter(2), the call f(r) returns r[2].&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;After g = itemgetter(2, 5, 3), the call g(r) returns (r[2], r[5], r[3]).&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;其实多级排序就是使用 Tuple 传入复数个用来排序的&lt;code&gt;key&lt;/code&gt;. 所以答案中的 lambda 表达式十几级返回了两个用来排序的&lt;code&gt;key&lt;/code&gt;分别为 &lt;code&gt;x&amp;lt;0&lt;/code&gt; 和 &lt;code&gt;abs(x)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;那 &lt;code&gt;x&amp;lt;0&lt;/code&gt; 是怎么实现让正数在前复数在后的呢? 先要说下实际上 Python 中 bool 类型是可以比较大小的.&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;In [&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]: &lt;span class=&quot;keyword&quot;&gt;False&lt;/span&gt; &amp;lt; &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Out[&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;]: &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;In [&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;]: (&lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt; &amp;gt; &lt;span class=&quot;keyword&quot;&gt;False&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Out[&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;]: &lt;span class=&quot;keyword&quot;&gt;True&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;所以第一级排序 &lt;code&gt;x&amp;lt;0&lt;/code&gt; 实际上是在排序 bool 类型, 把 False(x&amp;gt;0的数字) 放在 True(x&amp;lt;0的数字) 之前. 现在试试只执行第一级排序&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;In [&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;]: ls = [&lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-8&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-2&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-5&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;In [&lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;]: sorted(ls, key=&lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; x: x&amp;lt;&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Out[&lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;]: [&lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-8&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-2&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-5&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;正如预想的那样, 把负数放到了正数后面. 第二级排序就很好理解了, 在第一级排序的基础上按照绝对值排序, 执行一下.&lt;/p&gt;
+&lt;figure class=&quot;highlight python&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;In [&lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;]: sorted(ls, key=&lt;span class=&quot;keyword&quot;&gt;lambda&lt;/span&gt; x: (x&amp;lt;&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, abs(x)))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Out[&lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;]: [&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;4&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;7&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-2&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-5&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;-8&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;符合题目要求&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;问题来自 &lt;a href=&quot;http://www.v2ex.com/t/286691&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;v2ex&lt;/a&gt; &lt;/p&gt;
+&lt;p&gt;列表排序：&lt;/p&gt;
+&lt;p&gt;1.正数在前负数在后 2.整数从小到大 3.负数从大到小&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="coding" scheme="http://blog.lowid.me/categories/coding/"/>
+    
+    
+      <category term="Python" scheme="http://blog.lowid.me/tags/Python/"/>
+    
+  </entry>
   
   <entry>
     <title>Python 中的 property 函数</title>
